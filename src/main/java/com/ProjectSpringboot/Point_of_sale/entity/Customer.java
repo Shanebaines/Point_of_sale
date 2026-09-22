@@ -1,10 +1,9 @@
 package com.ProjectSpringboot.Point_of_sale.entity;
 
+import com.ProjectSpringboot.Point_of_sale.util.CustomerIdGenerator;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
 import java.util.ArrayList;
@@ -14,8 +13,10 @@ import java.util.ArrayList;
 public class Customer {
 
     @Id
-    @Column(name = "customer_id", length = 45)
-    private int customerId;
+    @GeneratedValue(generator = "customer-id-gen")
+    @GenericGenerator(name = "customer-id-gen", type = CustomerIdGenerator.class)
+    @Column(name = "customer_id", length = 20)
+    private String customerId;
 
     @Column(name = "customer_name", length = 100, nullable = false)
     private String customerName;
@@ -43,16 +44,14 @@ public class Customer {
     }
 
 
-    // Parameterized constructor
-    public Customer(int customerId,
-                    String customerName,
+    // Parameterized constructor (customerId is auto-generated — do NOT pass it)
+    public Customer(String customerName,
                     String customerAddress,
                     ArrayList<String> customerContact,
                     double customerSalary,
                     String customerNic,
                     int activeState) {
 
-        this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.customerContact = customerContact;
@@ -64,11 +63,11 @@ public class Customer {
 
     // Getters and Setters
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
@@ -130,7 +129,7 @@ public class Customer {
     @Override
     public String toString() {
         return "Customer{" +
-                "customerId=" + customerId +
+                "customerId='" + customerId + '\'' +
                 ", customerName='" + customerName + '\'' +
                 ", customerAddress='" + customerAddress + '\'' +
                 ", customerContact=" + customerContact +

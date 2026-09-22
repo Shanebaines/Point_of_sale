@@ -3,7 +3,7 @@ package com.ProjectSpringboot.Point_of_sale.dto;
 import java.util.ArrayList;
 
 public class CustomerUpdateDTO {
-    private int customerId;
+    private String customerId;
     private String customerName;
     private String customerAddress;
     private ArrayList<String> customerContact;
@@ -11,18 +11,18 @@ public class CustomerUpdateDTO {
     public CustomerUpdateDTO() {
     }
 
-    public CustomerUpdateDTO(int customerId, String customerName, String customerAddress, ArrayList<String> customerContact) {
+    public CustomerUpdateDTO(String customerId, String customerName, String customerAddress, ArrayList<String> customerContact) {
         this.customerId = customerId;
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.customerContact = customerContact;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(String customerId) {
         this.customerId = customerId;
     }
 
