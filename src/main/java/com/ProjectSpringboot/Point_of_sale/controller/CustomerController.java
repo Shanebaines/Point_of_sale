@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.util.List;
+
 
 @RestController
 @CrossOrigin
@@ -31,9 +33,34 @@ public class CustomerController {
             path = "/get-by-id",
             params = "Id"
     )
-    public CustomerDTO getCustomerById(@RequestParam(value ="Id") int customerId) {
+    public CustomerDTO getCustomerById(@RequestParam(value ="Id") String customerId) {
         CustomerDTO customerDTO = customerService.getCustomerById(customerId);
         System.out.println("Fetching customer with ID: " + customerId);
         return customerDTO;
+    }
+    @GetMapping(
+            path= "/get-all-customers"
+    )
+    public List<CustomerDTO> getAllCustomers() {
+        List<CustomerDTO> customers = customerService.getAllCustomers();
+        System.out.println("Fetching all customers");
+        return customers;
+    }
+
+    @DeleteMapping(
+            path = "/delete-by-id/{Id}"
+    )
+    public String deleteCustomerById(@PathVariable("Id") String customerId) {
+        customerService.deleteCustomerById(customerId);
+        return "Deleted Customer with ID: " + customerId + " Successfully";
+    }
+
+    @GetMapping(
+            path= "/get-all-customers-by-active-state/{activeState}"
+    )
+    public List<CustomerDTO> getAllCustomersByActiveState(@PathVariable(value = "activeState") boolean activeState) {
+        List<CustomerDTO> allCustomers = customerService.getAllCustomersbyactivestate(activeState);
+        System.out.println("Fetching all customers with active state: " + activeState);
+        return allCustomers;
     }
 }
