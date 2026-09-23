@@ -1,7 +1,7 @@
 package com.ProjectSpringboot.Point_of_sale.service;
 
-import com.ProjectSpringboot.Point_of_sale.dto.CustomerDTO;
-import com.ProjectSpringboot.Point_of_sale.dto.CustomerUpdateDTO;
+import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerDTO;
+import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerUpdateDTO;
 
 import java.util.List;
 

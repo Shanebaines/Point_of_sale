@@ -1,4 +1,4 @@
-package com.ProjectSpringboot.Point_of_sale.dto;
+package com.ProjectSpringboot.Point_of_sale.dto.request;
 
 import java.util.ArrayList;
 
