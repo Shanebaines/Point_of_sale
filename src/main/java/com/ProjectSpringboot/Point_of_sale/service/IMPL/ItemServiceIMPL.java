@@ -1,19 +1,21 @@
 package com.ProjectSpringboot.Point_of_sale.service.IMPL;
 
+import com.ProjectSpringboot.Point_of_sale.dto.paginated.PaginatedResponseItemDto;
 import com.ProjectSpringboot.Point_of_sale.dto.request.ItemDTO;
 import com.ProjectSpringboot.Point_of_sale.dto.response.ItemGetResponseDTO;
 import com.ProjectSpringboot.Point_of_sale.entity.Item;
+import com.ProjectSpringboot.Point_of_sale.exception.NotFoundException;
 import com.ProjectSpringboot.Point_of_sale.repo.ItemRepo;
 import com.ProjectSpringboot.Point_of_sale.service.ItemService;
 import com.ProjectSpringboot.Point_of_sale.util.mappers.ItemMapper;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 @Service
 
@@ -30,10 +32,8 @@ public class ItemServiceIMPL implements ItemService {
     @Override
     @Transactional
     public String saveItem(ItemDTO itemDTO) {
-
         Item item = modelMapper.map(itemDTO, Item.class);
-        item.setActiveState(true); // Mark item as active on save
-
+        item.setActiveState(true);
         itemRepo.save(item);
         return "Saved Item Successfully";
     }
@@ -41,10 +41,28 @@ public class ItemServiceIMPL implements ItemService {
     @Override
     public List<ItemGetResponseDTO> getItemByNameAndStatus(String itemName) {
         List<Item> items = itemRepo.findByItemNameEqualsAndActiveStateEquals(itemName, true);
-        if (!items.isEmpty()) {
-            return itemMapper.entityListToDTOList(items);
+        if (items.isEmpty()) {
+            throw new NotFoundException("No active items found with name: " + itemName);
         }
-        return List.of(); // Return empty list instead of throwing 500
+        return itemMapper.entityListToDTOList(items);
+    }
+
+    @Override
+    public List<ItemGetResponseDTO> getAllItems() {
+        List<Item> items = itemRepo.findAll();
+        if (items.isEmpty()) {
+            throw new NotFoundException("No items found");
+        }
+        return itemMapper.entityListToDTOList(items);
+    }
+
+    @Override
+    public List<ItemGetResponseDTO> getItemsByActiveStatus(boolean activeStatus) {
+        List<Item> items = itemRepo.findByActiveStateEquals(activeStatus);
+        if (items.isEmpty()) {
+            throw new NotFoundException("No items found with active status: " + activeStatus);
+        }
+        return itemMapper.entityListToDTOList(items);
     }
 
     @Override
@@ -52,10 +70,22 @@ public class ItemServiceIMPL implements ItemService {
     public String updateActiveState(String itemId, boolean activeState) {
         Item item = itemRepo.findByItemId(itemId);
         if (item == null) {
-            return "Item not found with ID: " + itemId;
+            throw new NotFoundException("Item not found with ID: " + itemId);
         }
         item.setActiveState(activeState);
         itemRepo.save(item);
         return "Item active state updated successfully";
+    }
+
+    @Override
+    public PaginatedResponseItemDto getItemsByActiveStatusWithPagination(boolean activeStatus, int page, int size) {
+        Page<Item> items = itemRepo.findByActiveStateEquals(activeStatus, PageRequest.of(page, size));
+        if (items.isEmpty()) {
+            throw new NotFoundException("No items found with active status: " + activeStatus);
+        }
+        return new PaginatedResponseItemDto(
+                itemMapper.entityListToDTOList(items.getContent()),
+                items.getTotalElements()
+        );
     }
 }

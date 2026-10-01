@@ -2,12 +2,12 @@ package com.ProjectSpringboot.Point_of_sale.service.IMPL;
 import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerDTO;
 import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerUpdateDTO;
 import com.ProjectSpringboot.Point_of_sale.entity.Customer;
+import com.ProjectSpringboot.Point_of_sale.exception.NotFoundException;
 import com.ProjectSpringboot.Point_of_sale.repo.CustomerRepo;
 import com.ProjectSpringboot.Point_of_sale.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,23 +49,24 @@ public class CustomerServiceIMPL implements CustomerService{
 
     @Override
     public CustomerDTO getCustomerById(String customerId) {
-        Customer customer = customerRepo.findById(customerId).orElse(null);
-        if (customer != null) {
-            return new CustomerDTO(
-                    customer.getCustomerId(),
-                    customer.getCustomerName(),
-                    customer.getCustomerAddress(),
-                    customer.getCustomerContact(),
-                    customer.getCustomerSalary(),
-                    customer.getCustomerNic(),
-                    customer.getActiveState()
-            );
-        }
-        return null;
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new NotFoundException("Customer not found with ID: " + customerId));
+        return new CustomerDTO(
+                customer.getCustomerId(),
+                customer.getCustomerName(),
+                customer.getCustomerAddress(),
+                customer.getCustomerContact(),
+                customer.getCustomerSalary(),
+                customer.getCustomerNic(),
+                customer.getActiveState()
+        );
     }
     @Override
     public List<CustomerDTO> getAllCustomers() {
         List<Customer> customers = customerRepo.findAll();
+        if(customers.isEmpty()) {
+            throw new NotFoundException("No any customers");
+        }else{
         List<CustomerDTO> customerDTOs = new ArrayList<>();
         for (Customer customer : customers) {
             CustomerDTO customerDTO = new CustomerDTO(
@@ -80,15 +81,15 @@ public class CustomerServiceIMPL implements CustomerService{
             customerDTOs.add(customerDTO);
         }
         return customerDTOs;
+        }
     }
 
     @Override
     public void deleteCustomerById(String customerId) {
-        if(customerRepo.existsById(customerId)) {
-            customerRepo.deleteById(customerId);
-        }else {
-            throw new RuntimeException("Customer with ID " + customerId + " does not exist.");
+        if (!customerRepo.existsById(customerId)) {
+            throw new NotFoundException("Customer not found with ID: " + customerId);
         }
+        customerRepo.deleteById(customerId);
     }
 
     @Override

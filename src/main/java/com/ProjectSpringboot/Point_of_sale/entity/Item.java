@@ -11,9 +11,6 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "item")
 @NoArgsConstructor
 @AllArgsConstructor
-//@Getter
-//@Setter
-//@ToString
 @Data
 
 public class Item {
@@ -27,19 +24,19 @@ public class Item {
     private String itemName;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "measurementUnit", nullable = false, length = 100)
+    @Column(name = "measurement_unit", nullable = false, length = 100)
     private MeasuringUnit measurementUnit;
 
-    @Column(name = "balanceQuantity", nullable = false,length = 100)
+    @Column(name = "balance_quantity", nullable = false, length = 100)
     private double balanceQuantity;
 
-    @Column(name = "supplierPrice",length = 100,nullable = false)
+    @Column(name = "supplier_price", length = 100, nullable = false)
     private double supplierPrice;
 
-    @Column(name = "sellingPrice",length = 100,nullable = false)
+    @Column(name = "selling_price", length = 100, nullable = false)
     private double sellingPrice;
 
-    @Column(name = "activeState")
+    @Column(name = "active_state")
     private boolean activeState;
 
 
