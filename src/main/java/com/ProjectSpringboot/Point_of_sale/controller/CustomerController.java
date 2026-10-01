@@ -3,12 +3,12 @@ package com.ProjectSpringboot.Point_of_sale.controller;
 import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerDTO;
 import com.ProjectSpringboot.Point_of_sale.dto.request.CustomerUpdateDTO;
 import com.ProjectSpringboot.Point_of_sale.service.CustomerService;
+import com.ProjectSpringboot.Point_of_sale.util.StandardResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.List;
-
 
 @RestController
 @CrossOrigin
@@ -18,49 +18,38 @@ public class CustomerController {
     private CustomerService customerService;
 
     @PostMapping("/save01")
-    public String saveCustomer(@RequestBody CustomerDTO customerDTO) {
-        customerService.saveCustomer(customerDTO);
-        return "Saved Customer Successfully";
+    public ResponseEntity<StandardResponse> saveCustomer(@RequestBody CustomerDTO customerDTO) {
+        String name = customerService.saveCustomer(customerDTO);
+        return ResponseEntity.ok(new StandardResponse(200, "Saved Customer Successfully", name));
     }
 
     @PutMapping("/update01")
-    public String updateCustomer(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
-        customerService.updateCustomer(customerUpdateDTO);
-        return customerUpdateDTO.getCustomerName() + " - Updated Customer Successfully";
+    public ResponseEntity<StandardResponse> updateCustomer(@RequestBody CustomerUpdateDTO customerUpdateDTO) {
+        String result = customerService.updateCustomer(customerUpdateDTO);
+        return ResponseEntity.ok(new StandardResponse(200, result, null));
     }
 
-    @GetMapping(
-            path = "/get-by-id",
-            params = "Id"
-    )
-    public CustomerDTO getCustomerById(@RequestParam(value ="Id") String customerId) {
+    @GetMapping(path = "/get-by-id", params = "Id")
+    public ResponseEntity<StandardResponse> getCustomerById(@RequestParam(value = "Id") String customerId) {
         CustomerDTO customerDTO = customerService.getCustomerById(customerId);
-        System.out.println("Fetching customer with ID: " + customerId);
-        return customerDTO;
+        return ResponseEntity.ok(new StandardResponse(200, "Customer fetched successfully", customerDTO));
     }
-    @GetMapping(
-            path= "/get-all-customers"
-    )
-    public List<CustomerDTO> getAllCustomers() {
+
+    @GetMapping(path = "/get-all-customers")
+    public ResponseEntity<StandardResponse> getAllCustomers() {
         List<CustomerDTO> customers = customerService.getAllCustomers();
-        System.out.println("Fetching all customers");
-        return customers;
+        return ResponseEntity.ok(new StandardResponse(200, "Customers fetched successfully", customers));
     }
 
-    @DeleteMapping(
-            path = "/delete-by-id/{Id}"
-    )
-    public String deleteCustomerById(@PathVariable("Id") String customerId) {
+    @DeleteMapping(path = "/delete-by-id/{Id}")
+    public ResponseEntity<StandardResponse> deleteCustomerById(@PathVariable("Id") String customerId) {
         customerService.deleteCustomerById(customerId);
-        return "Deleted Customer with ID: " + customerId + " Successfully";
+        return ResponseEntity.ok(new StandardResponse(200, "Deleted Customer Successfully", null));
     }
 
-    @GetMapping(
-            path= "/get-all-customers-by-active-state/{activeState}"
-    )
-    public List<CustomerDTO> getAllCustomersByActiveState(@PathVariable(value = "activeState") boolean activeState) {
+    @GetMapping(path = "/get-all-customers-by-active-state/{activeState}")
+    public ResponseEntity<StandardResponse> getAllCustomersByActiveState(@PathVariable(value = "activeState") boolean activeState) {
         List<CustomerDTO> allCustomers = customerService.getAllCustomersbyactivestate(activeState);
-        System.out.println("Fetching all customers with active state: " + activeState);
-        return allCustomers;
+        return ResponseEntity.ok(new StandardResponse(200, "Customers fetched successfully", allCustomers));
     }
 }
